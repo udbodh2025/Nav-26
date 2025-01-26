@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete Transaction" %}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">{% trans "Delete Transaction" %}</h1>
+    <p class="mb-4">{% trans "Are you sure you want to delete this transaction?" %}</p>
+    <p class="mb-4"><strong>{% trans "Date" %}:</strong> {{ transaction.date }}</p>
+    <p class="mb-4"><strong>{% trans "Type" %}:</strong> {{ transaction.get_transaction_type_display }}</p>
+    <p class="mb-4"><strong>{% trans "Amount" %}:</strong> ${{ transaction.amount|floatformat:2 }}</p>
+    <p class="mb-4"><strong>{% trans "Description" %}:</strong> {{ transaction.description }}</p>
+    <form method="post" class="inline">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            {% trans "Confirm Delete" %}
+        </button>
+    </form>
+    <a href="{% url 'transaction_list' transaction.project.id %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2">
+        {% trans "Cancel" %}
+    </a>
+</div>
+{% endblock %}
+

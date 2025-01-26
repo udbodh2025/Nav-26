@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {% if project %}
+        {% trans "Edit Project" %}
+    {% else %}
+        {% trans "Create Project" %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">
+        {% if project %}
+            {% trans "Edit Project" %}
+        {% else %}
+            {% trans "Create Project" %}
+        {% endif %}
+    </h1>
+    <form method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        {% csrf_token %}
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold mb-2">{% trans "Project Details" %}</h2>
+            {% for field in form %}
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <p class="text-red-500 text-xs italic">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold mb-2">{% trans "Tasks" %}</h2>
+            {{ formset.management_form }}
+            <div id="task-formset">
+                {% for task_form in formset %}
+                    <div class="task-form mb-4 p-4 border rounded">
+                        {% for field in task_form %}
+                            <div class="mb-2">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    {% for error in field.errors %}
+                                        <p class="text-red-500 text-xs italic">{{ error }}</p>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        {% if task_form.instance.pk %}
+                            {{ task_form.DELETE }}
+                            <label for="{{ task_form.DELETE.id_for_label }}" class="text-red-500 text-sm">
+                                {% trans "Delete this task" %}
+                            </label>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-task" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2">
+                {% trans "Add Task" %}
+            </button>
+        </div>
+        
+        <div class="flex items-center justify-between">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                {% if project %}
+                    {% trans "Update Project" %}
+                {% else %}
+                    {% trans "Create Project" %}
+                {% endif %}
+            </button>
+            <a class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href="{% url 'project_list' module.id %}">
+                {% trans "Cancel" %}
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addTaskButton = document.getElementById('add-task');
+        const taskFormset = document.getElementById('task-formset');
+        let formCount = {{ formset.total_form_count }};
+
+        addTaskButton.addEventListener('click', function() {
+            const newForm = taskFormset.children[0].cloneNode(true);
+            const formRegex = RegExp(`form-(\\d){1}-`,'g');
+            
+            newForm.innerHTML = newForm.innerHTML.replace(formRegex, `form-${formCount}-`);
+            taskFormset.appendChild(newForm);
+            
+            // Update form count
+            const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+            totalForms.value = formCount + 1;
+            
+            formCount++;
+        });
+    });
+</script>
+{% endblock %}
+

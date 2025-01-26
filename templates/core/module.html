@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ module.name }}{% endblock %}
+
+{% block content %}
+    <h1>{{ module.name }}</h1>
+    <div class="tabs">
+        <ul>
+            {% for form in forms %}
+                <li><a href="#form-{{ form.id }}">{{ form.name }}</a></li>
+            {% endfor %}
+            <li><a href="{% url 'task_list' module.id %}">{% trans "Tasks" %}</a></li>
+        </ul>
+        {% for form in forms %}
+            <div id="form-{{ form.id }}">
+                {{ form.content|safe }}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.tabs ul li a');
+        const tabContents = document.querySelectorAll('.tabs > div');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('href');
+                
+                if (targetId.startsWith('#')) {
+                    tabContents.forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    document.querySelector(targetId).style.display = 'block';
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    e.target.classList.add('active');
+                } else {
+                    window.location.href = targetId;
+                }
+            });
+        });
+
+        // Show the first tab by default
+        if (tabs.length > 0) {
+            tabs[0].click();
+        }
+    });
+</script>
+{% endblock %}
+

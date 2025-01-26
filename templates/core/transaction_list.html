@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Transactions" %} - {{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">{% trans "Transactions" %} - {{ project.name }}</h1>
+    <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">{% trans "Financial Summary" %}</h2>
+        <p>{% trans "Total Income" %}: ${{ income|floatformat:2 }}</p>
+        <p>{% trans "Total Expenses" %}: ${{ expenses|floatformat:2 }}</p>
+        <p>{% trans "Balance" %}: ${{ balance|floatformat:2 }}</p>
+    </div>
+    <a href="{% url 'transaction_create' project.id %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">
+        {% trans "Create New Transaction" %}
+    </a>
+    {% if messages %}
+        <div class="messages mb-4">
+            {% for message in messages %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="bg-white shadow-md rounded my-6">
+        <table class="min-w-full">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        {% trans "Date" %}
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        {% trans "Type" %}
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        {% trans "Amount" %}
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        {% trans "Description" %}
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        {% trans "Actions" %}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                            {{ transaction.date }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                            {{ transaction.get_transaction_type_display }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                            ${{ transaction.amount|floatformat:2 }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                            {{ transaction.description }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                            <a href="{% url 'transaction_update' transaction.id %}" class="text-blue-600 hover:text-blue-900 mr-2">{% trans "Edit" %}</a>
+                            <a href="{% url 'transaction_delete' transaction.id %}" class="text-red-600 hover:text-red-900">{% trans "Delete" %}</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 whitespace-no-wrap border-b border-gray-300 text-center">
+                            {% trans "No transactions found." %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+

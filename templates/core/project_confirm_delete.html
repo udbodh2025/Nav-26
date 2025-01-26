@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Delete Project" %}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">{% trans "Delete Project" %}</h1>
+    <p class="mb-4">{% trans "Are you sure you want to delete the project:" %} "{{ project.name }}"?</p>
+    <form method="post" class="inline">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            {% trans "Confirm Delete" %}
+        </button>
+    </form>
+    <a href="{% url 'project_list' project.module.id %}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2">
+        {% trans "Cancel" %}
+    </a>
+</div>
+{% endblock %}
+

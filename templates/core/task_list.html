@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Tasks" %} - {{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">{% trans "Tasks" %} - {{ project.name }}</h1>
+    <a href="{% url 'task_create' project.id %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">
+        {% trans "Create New Task" %}
+    </a>
+    {% if messages %}
+        <div class="messages mb-4">
+            {% for message in messages %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="bg-white shadow-md rounded my-6">
+        <table class="min-w-full">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        {% trans "Title" %}
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        {% trans "Status" %}
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        {% trans "Assigned To" %}
+                    </th>
+                    <th class="px-6 py-3 border-b-2 border-gray-300 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        {% trans "Actions" %}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                            {{ task.title }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                            {{ task.get_status_display }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                            {{ task.assigned_to|default_if_none:"-" }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-300">
+                            <a href="{% url 'task_update' task.id %}" class="text-blue-600 hover:text-blue-900 mr-2">{% trans "Edit" %}</a>
+                            <a href="{% url 'task_delete' task.id %}" class="text-red-600 hover:text-red-900">{% trans "Delete" %}</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 whitespace-no-wrap border-b border-gray-300 text-center">
+                            {% trans "No tasks found." %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
